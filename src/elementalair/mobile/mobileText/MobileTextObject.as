@@ -33,6 +33,7 @@ package elementalair.mobile.mobileText {
 			
 			// Check for retina display on IOS
 			if (Capabilities.screenDPI == 264) super.compensateForRetina = true;
+			trace(this + 'compensate for retina: ' + super.compensateForRetina);
 			
 			if (super.hasBackground) this.drawBackground();
 			else this.drawStageText();
@@ -64,13 +65,13 @@ package elementalair.mobile.mobileText {
 		 */
 		private function drawStageText():void {
 			// Convert local x and y of textObject to global x and y for native os screen poisition
-			var localPoint:Point = new Point(this.x, this.y);
+			var localPoint:Point = new Point(0, 0);
 			
 			var globalPoint:Point;
 			if (super.useLocalToGlobal) globalPoint = this.localToGlobal(localPoint);
 			else globalPoint = localPoint;
 			
-			var stWidth:Number = super.textFieldWidth;
+			var stWidth:Number 	= super.textFieldWidth;
 			var stHeight:Number = super.textFieldHeight;
 			
 			// Multiply width, height, x and y properties of StageText if retina display
@@ -177,22 +178,26 @@ package elementalair.mobile.mobileText {
 		 * Remove StageText and display objects.
 		 */
 		public function dispose(evt:Event = null):void {
+			// Dispose of stageText without error
 			if (super.stageText) {
 				super.stageText.stage = null;
 				super.stageText.dispose();
 			}
 			
+			// Try and remove _bitmapCopy without error
 			if (this._bitmapCopy) {
-				if (this.contains(this._bitmapCopy)) {
+				if (this.contains(this._bitmapCopy))
 					this.removeChild(this._bitmapCopy);
-				}
+
 				// Remove bitmapdata from memory instead of waiting for garbage collection
 				this._bitmapCopy.bitmapData.dispose();
 				this._bitmapCopy = null;
 			}
 			
+			// Remove super.backgroundSprite without error
 			if (super.backgroundSprite) {
-				this.removeChild(super.backgroundSprite);
+				if (this.contains(super.backgroundSprite))
+					this.removeChild(super.backgroundSprite);
 				super.backgroundSprite = null;
 			}
 		}
